@@ -15,8 +15,7 @@ readings = [
     {"name": "front-door", "room": "hall",    "temp": 27.4, "online": True},
     {"name": "hall-lamp",  "room": "hall",    "temp": 26.1, "online": True},
     {"name": "attic",      "room": "attic",   "temp": 31.9, "online": True},
-    {"name": "fridge",     "room": "kitchen", "temp": 4.2,  "online": False},
-    {"name": "patio",      "room": "outside", "temp": 29.8, "online": True},
+    {"name": "fridge",     "room": "kitchen", "temp": 4.2,  "online": False}
 ]
 
 
@@ -45,4 +44,12 @@ def update_device(name: str, device: Device):
         if existing_device["name"] == name:
             readings[i] = device.model_dump()
             return readings[i]
+    raise HTTPException(status_code=404, detail="No device called " + name)
+
+@app.delete("/devices/{name}", status_code=200)
+def delete_device(name: str):
+    for existing_device in readings:
+        if existing_device["name"] == name:
+            readings.remove(existing_device)
+            return {"message": f"Device '{name}' was deleted"}
     raise HTTPException(status_code=404, detail="No device called " + name)
